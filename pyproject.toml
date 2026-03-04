@@ -1,0 +1,8 @@
+[project]
+name = "novel-ai"
+version = "0.1.0"
+description = "State-driven AI novel authoring engine"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
