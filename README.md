@@ -94,6 +94,21 @@ llm = GenericLLMClient(config=model_cfg, key_manager=keys)
 
 > Stage 不直接写文件。
 
+
+## 示例测试用例（回滚恢复）
+
+新增测试 `tests/test_rollback_flow.py`，覆盖以下关键行为：
+
+- Stage5 首次一致性检查失败。
+- `ConsistencyReport` 指定回滚到 Stage4。
+- Orchestrator 回滚后重新执行并最终完成到 Stage7。
+
+运行：
+
+```bash
+pytest -q tests/test_rollback_flow.py
+```
+
 ## 测试
 
 ```bash
