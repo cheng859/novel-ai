@@ -3,13 +3,14 @@ from __future__ import annotations
 from dataclasses import asdict
 from typing import Dict, List
 
-from novel_ai.core.interfaces import LLMClient, Stage
+from novel_ai.core.interfaces import LLMClient, Stage, WebSearchClient
 from novel_ai.core.models import GlobalCharacter, StageContext, StageId, StageResult, VolumeCharacter
 
 
 class BaseStage(Stage):
-    def __init__(self, llm: LLMClient):
+    def __init__(self, llm: LLMClient, web_search: WebSearchClient | None = None):
         self.llm = llm
+        self.web_search = web_search
 
 
 class Stage0ThemeModeling(BaseStage):
@@ -47,9 +48,12 @@ class Stage2GlobalCharacterCreation(BaseStage):
                 ability_limits=["不可违背世界法则"],
                 forbidden_behaviors=["无理由背叛同伴"],
             )
+
+        theme = context.input_payload.get("theme", "")
+        refs = self.web_search.search(f"小说题材参考: {theme}", limit=5) if self.web_search else []
         return StageResult(
             stage=self.stage_id,
-            outputs={"global_character_ids": list(created.keys())},
+            outputs={"global_character_ids": list(created.keys()), "reference_materials": refs},
             updated_global_characters=created,
         )
 

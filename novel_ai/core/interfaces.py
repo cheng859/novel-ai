@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from .models import ChapterRuntimeContext, ConsistencyReport, StageContext, StageResult, VolumeCharacter
 
@@ -20,6 +20,12 @@ class Stage(ABC):
 class LLMClient(ABC):
     @abstractmethod
     def generate(self, prompt: str, temperature: float, max_tokens: int) -> str:
+        ...
+
+
+class WebSearchClient(ABC):
+    @abstractmethod
+    def search(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         ...
 
 

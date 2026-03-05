@@ -82,6 +82,56 @@ llm = GenericLLMClient(config=model_cfg, key_manager=keys)
 - OpenAI / DeepSeek / 本地兼容：`POST /chat/completions`
 - Claude：`POST /messages`
 
+
+## WebSearch 检索参考（用于大纲生成）
+
+在 Stage2（总纲/角色生成）中，系统支持先检索网络相似题材作为参考，并把结果写入 `reference_materials`。
+
+### 1) 可选检索提供商
+
+- Reddit
+- 百度（示例为 API 模式）
+- Custom（用户自定义搜索 API）
+
+### 2) 配置示例
+
+```python
+from novel_ai.infra.config import (
+    ApiKeyBundle,
+    ApiKeyManager,
+    SearchProvider,
+    default_web_search_config,
+)
+from novel_ai.infra.websearch import GenericWebSearchClient
+
+keys = ApiKeyManager(ApiKeyBundle.from_env())
+search_cfg = default_web_search_config(SearchProvider.REDDIT)
+search_client = GenericWebSearchClient(config=search_cfg, key_manager=keys)
+```
+
+### 3) 自定义 API（例如企业内检索）
+
+```python
+from novel_ai.infra.config import SearchProvider, WebSearchConfig
+
+cfg = WebSearchConfig(
+    provider=SearchProvider.CUSTOM,
+    api_base="https://your-search-api.example.com",
+    search_path="/search",
+    api_key_env="YOUR_SEARCH_API_KEY",
+    api_key_header="Authorization",
+    query_param="q",
+)
+```
+
+### 4) 常见环境变量
+
+```bash
+export BAIDU_API_KEY="..."
+export WEBSEARCH_API_KEY="..."
+export YOUR_SEARCH_API_KEY="..."
+```
+
 ## 文件持久化规范
 
 通过 `NovelRepository` 统一写入：
